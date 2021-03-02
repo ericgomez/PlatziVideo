@@ -3,6 +3,7 @@
 import express from 'express'; //importamos express
 import dotenv from 'dotenv';
 import webpack from 'webpack';
+import helmet from 'helmet';
 import React from 'react';
 import { renderToString } from 'react-dom/server'; //Funcion para renderear los componentes como string
 import { Provider } from 'react-redux';
@@ -34,6 +35,12 @@ if (ENV === 'development') {
   app.use(webpackDevMiddleware(compiler, serverConfig)); //Middleware to compile all the files and put it on the server
   app.use(webpackHotMiddleware(compiler)); //Middleware to enable hot reload
 
+} else {
+  app.use(express.static(`${__dirname}/public`));
+  // This...
+  app.use(helmet());
+  app.use(helmet.permittedCrossDomainPolicies());
+  app.disable('x-powered-by');
 }
 
 const setResponse = (html, preloadedState) => {
