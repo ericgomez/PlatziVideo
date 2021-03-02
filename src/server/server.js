@@ -36,8 +36,8 @@ if (ENV === 'development') {
 
 }
 
-const setResponse = (html) => {
-  return(`<!DOCTYPE html>
+const setResponse = (html, preloadedState) => {
+  return (`<!DOCTYPE html>
   <html>
     <head>
       <link rel="stylesheet" href="assets/app.css" type="text/css"/> 
@@ -45,23 +45,28 @@ const setResponse = (html) => {
     </head>
     <body>
       <div id="app">${html}</div>
+      <script>
+        window.__PRELOADED_STATE__ = ${JSON.stringify(preloadedState).replace(/</g, '\\u003c')}
+      </script>
+      <script src="assets/app.js" type="text/javascript"></script>
     </body>
-    <script src="assets/app.js" type="text/javascript"></script>
   </html>`);
-}
+};
 
 const renderApp = (req, res) => {
   const store = createStore(reducer, initialState);
+  const preloadedState = store.getState();
+
   const html = renderToString(
     <Provider store={store}>
       <StaticRouter location={req.url} context={{}}>
         {renderRoutes(serverRoutes)}
       </StaticRouter>
-    </Provider>
-  ); //con esta funcion preparamos el provider para el redux y el router, 
+    </Provider>,
+  ); //con esta funcion preparamos el provider para el redux y el router,
   //dentro del router colocamos la funcion renderRoutes y le pasamos el archivo de las rutas
-  res.send(setResponse(html));
-}
+  res.send(setResponse(html, preloadedState));
+};
 
 app.get('*', renderApp);
 
