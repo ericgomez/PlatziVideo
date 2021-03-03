@@ -79,5 +79,5 @@ app.get('*', renderApp);
 
 app.listen(PORT, (err) => {
   if (err) console.error();
-  else console.log('Server running on port: 3000');
+  else console.log(`Server running on port: ${PORT}`);
 });
